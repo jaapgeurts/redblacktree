@@ -1,0 +1,9 @@
+{
+	"authors": [
+		"Jaap Geurts"
+	],
+	"copyright": "Copyright © 2020, Jaap Geurts",
+	"description": "A redblack tree implementation & testdriver",
+	"license": "GPLv2",
+	"name": "redblack"
+}

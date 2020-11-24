@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/redblack
+redblack.so
+redblack.dylib
+redblack.dll
+redblack.a
+redblack.lib
+redblack-test-*
+*.exe
+*.o
+*.obj
+*.lst
