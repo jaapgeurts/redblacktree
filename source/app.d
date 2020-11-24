@@ -21,7 +21,7 @@ void printnum(int depth, int left, int right, int val) {
 
 void main(string[] args)
 {
-	writeln("Red-Black tree test driver");
+	writeln("// Red-Black tree test driver");
 
 	RBTree tree = new RBTree();
 
@@ -30,22 +30,20 @@ void main(string[] args)
 	if (args.length == 1)
 		arr = [9,5,15,2,7,10,17,6,8,16];
 	else {
-		arr = new int[args.length-1];
-		for(int i=1;i<args.length;i++)
-			arr[i-1] = to!int(args[i]);
+        arr = args[1].split(",").map!(to!int).array;
 	}
 	
-	write("arr:     [");
+	write("// arr:     [");
 	foreach(val; arr) {
 		write(val,",");
 		tree.insert(val);
 	}
 	writeln("]");
 
-	write("inorder: [");
+	write("// inorder: [");
 	tree.inorder(&printnum);
 	writeln("]");
-	writeln("Max depth: ", max_depth);
+	writeln("// Max depth: ", max_depth);
 
 	tree.printtree();
 	writeln();
