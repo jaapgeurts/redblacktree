@@ -87,6 +87,32 @@ class Node {
         }
     }
 
+    void rotateRight() {
+        Node t = left;
+        left = t.right;
+        if (left !is null)
+            left.parent = this;
+        t.right = this;
+        t.parent = parent;
+        t.link = link;
+        link = &t.right;
+        *t.link = t;
+        parent = t;
+    }
+
+    void rotateLeft() {
+        Node t = right;
+        right = t.left;
+        if (right !is null)
+            right.parent = this;
+        t.left = this;
+        t.parent = parent;
+        t.link = link;
+        link = &t.left;
+        *t.link = t;
+        parent = t;
+    }
+
     void reorderTreeRight() {
         Node uncle = parent.right == this ? parent.left : parent.right;
         if (uncle !is null && uncle.color == Color.Red) {
@@ -99,32 +125,21 @@ class Node {
             // rotate  (two cases)
             if (parent.right == this) {
                 // RR case rotation
-                parent.right = left;
-                left = parent;
-                *parent.link = this;
-                parent.parent = this;
-
+                parent.rotateLeft();
+                //swap colors
+                Color t = color;
+                color = left.color;
+                left.color = t;
             }
             else {
                 // LR case rotation
-                parent.left = right;
-                right.left = this;
-                right = right.left;
-                right.parent = parent;
-                parent = right;
+                rotateLeft();
+                parent.parent.rotateRight();
 
-                parent.left = right;
-                right = parent;
-                *parent.link = this;
-                parent.parent = this;
             }
-            //swap colors
-            Color t = color;
-            color = parent.color;
-            parent.color = t;
         }
-      //  if (parent !is null && parent.parent !is null)
-   //         parent.parent.reorderTreeRight();
+        if (parent !is null && parent.parent !is null)
+            parent.parent.reorderTreeRight();
     }
 
     void reorderTreeLeft() {
@@ -139,31 +154,26 @@ class Node {
             // rotate  (two cases)
             if (parent.left == this) {
                 // LL case rotation
-                parent.left = right;
-                right = parent;
-                *parent.link = this;
-                parent.parent = this;
+                parent.rotateRight();
+                //swap colors
+                Color t = color;
+                color = right.color;
+                right.color = t;
+
             }
             else {
                 // RL case rotation
-                parent.right = left;
-                left.right = this;
-                left = left.right;
-                left.parent = parent;
-                parent = left;
+                rotateRight();
+                parent.parent.rotateLeft();
 
-                parent.left = right;
-                right = parent;
-                *parent.link = this;
-                parent.parent = this;
             }
             //swap colors
             Color t = color;
             color = parent.color;
             parent.color = t;
         }
-      //  if (parent !is null && parent.parent !is null)
-       //     parent.parent.reorderTreeRight();
+        if (parent !is null && parent.parent !is null)
+            parent.parent.reorderTreeRight();
     }
 
     /// inserts a node recursively
