@@ -90,8 +90,9 @@ class Node {
     /// inserts a node recursively
     void insertRec(int val) {
         if (val < value) {
+            // insert left
             if (left is null) {
-                left = new Node(this,&left,val);
+                left = new Node(this, &left, val);
                 if (color == Color.Red) {
                     Node uncle = parent.left == this ? parent.right : parent.left;
                     if (uncle !is null && uncle.color == Color.Red) {
@@ -99,12 +100,32 @@ class Node {
                         parent.color = Color.Red;
                         color = Color.Black;
                         uncle.color = Color.Black;
-                    } else {
+                    }
+                    else {
                         // rotate  (two cases)
-                        if (parent.left  == this) {
-                            // LL rotation
-                        } else {
-                            // RL rotation
+                        if (parent.left == this) {
+                            // LL case rotation
+                            parent.left = right;
+                            right = parent;
+                            *parent.link = this;
+                            parent.parent = this;
+                            //swap colors
+                            Color t = color;
+                            color = parent.color;
+                            parent.color = t;
+                        }
+                        else {
+                            // RL case rotation
+                            parent.right = left;
+                            left.right = this;
+                            left = left.right;
+                            left.parent = parent;
+                            parent = left;
+                            
+                            parent.left = right;
+                            right = parent;
+                            *parent.link = this;
+                            parent.parent = this;
                         }
                     }
                 }
@@ -114,8 +135,9 @@ class Node {
             }
         }
         else {
+            // insert right
             if (right is null) {
-                right = new Node(this,&right, val);
+                right = new Node(this, &right, val);
                 if (color == Color.Red) {
                     Node uncle = parent.right == this ? parent.left : parent.right;
                     if (uncle !is null && uncle.color == Color.Red) {
@@ -123,19 +145,32 @@ class Node {
                         parent.color = Color.Red;
                         color = Color.Black;
                         uncle.color = Color.Black;
-                    } else {
+                    }
+                    else {
                         // rotate  (two cases)
                         if (parent.right == this) {
-                            // RR rotation
+                            // RR case rotation
                             parent.right = left;
                             left = parent;
                             *parent.link = this;
+                            parent.parent = this;
                             //swap colors
                             Color t = color;
                             color = parent.color;
                             parent.color = t;
-                        } else {
-                            // LR rotation
+                        }
+                        else {
+                            // LR case rotation
+                            parent.left = right;
+                            right.left = this;
+                            right = right.left;
+                            right.parent = parent;
+                            parent = right;
+                            
+                            parent.left = right;
+                            right = parent;
+                            *parent.link = this;
+                            parent.parent = this;
                         }
                     }
                 }
@@ -158,7 +193,7 @@ class RBTree {
     /// insert and element into the tree
     void insert(int val) {
         if (root is null)
-            root = new Node(null,&root, val, Color.Black);
+            root = new Node(null, &root, val, Color.Black);
         else
             root.insertRec(val);
         count++;
