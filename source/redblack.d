@@ -53,8 +53,11 @@ class Node {
         write(color == Color.Red ? "lightcoral" : "gray");
         writeln("];");
 
-        if (left is null && right is null)
+        if (left is null && right is null) {
+            if (parent !is null) 
+                writeln("  ", value, "->\"", parent.value , "\";");
             return;
+        }
 
         string nodeName;
         if (left is null) {
@@ -71,6 +74,9 @@ class Node {
         else
             nodeName = to!string(right.value);
         writeln("  ", value, "->\"", nodeName, "\";");
+
+        if (parent !is null) 
+            writeln("  ", value, "->\"", parent.value , "\";");
 
         if (left !is null)
             left.printtree(depth + 1, l + 1, r);
@@ -137,9 +143,10 @@ class Node {
                 parent.parent.rotateRight();
 
             }
+            if (parent !is null && parent.parent !is null)
+                parent.reorderTreeRight();
         }
-        if (parent !is null && parent.parent !is null)
-            parent.parent.reorderTreeRight();
+
     }
 
     void reorderTreeLeft() {
@@ -167,13 +174,9 @@ class Node {
                 parent.parent.rotateLeft();
 
             }
-            //swap colors
-            Color t = color;
-            color = parent.color;
-            parent.color = t;
+            if (parent !is null && parent.parent !is null)
+                parent.reorderTreeLeft();
         }
-        if (parent !is null && parent.parent !is null)
-            parent.parent.reorderTreeRight();
     }
 
     /// inserts a node recursively
@@ -228,11 +231,23 @@ class RBTree {
             root.inorder(0, 0, 0, nodeAction);
     }
 
-    void printtree() {
-        writeln("digraph BST {");
-        writeln("graph [fontname = \"helvetica\"];");
-        writeln("node [fontname = \"helvetica\"];");
-        writeln("edge [fontname = \"helvetica\"];");
+    void printtree(string caption) {
+        writeln(q"EOS
+digraph BST {
+graph [fontname = "helvetica"];
+node [fontname = "helvetica"];
+edge [fontname = "helvetica"];
+splines=false
+nodesep=0.4; //was 0.8
+ranksep=0.5;
+penwidth=0.1;
+node[shape=circle];
+labelloc=top;
+labeljust=left;
+EOS"
+        );
+        writeln("label=\"",caption,"\"");
+
         if (root !is null) {
             root.printtree(0, 0, 0);
         }

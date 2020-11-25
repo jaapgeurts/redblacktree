@@ -1,6 +1,6 @@
 import std.stdio;
 import std.range;
-import std.random : uniform;
+import std.random;
 import std.algorithm;
 import std.conv;
 
@@ -25,27 +25,28 @@ void main(string[] args)
 
 	RBTree tree = new RBTree();
 
-	//int[] arr = generate!(() => uniform(0, 1000)).take(20).array;
-	int[] arr;
+	int[] arr = 100.iota.randomCover.take(40).array;
+	/*int[] arr;
 	if (args.length == 1)
 		arr = [9,5,15,2,7,10,17,6,8,16];
 	else {
         arr = args[1].split(",").map!(to!int).array;
-	}
+	}*/
 	
-	write("// arr:     [");
-	foreach(val; arr) {
-		write(val,",");
+    foreach(val; arr) {
 		tree.insert(val);
 	}
-	writeln("]");
+	string caption = "[";
+    caption ~= arr.map!(to!string).join(",");
+	caption ~= "]";
+    writeln("// arr: ", caption);
 
 	write("// inorder: [");
 	tree.inorder(&printnum);
 	writeln("]");
 	writeln("// Max depth: ", max_depth);
 
-	tree.printtree();
+	tree.printtree(caption);
 	writeln();
 
 }
