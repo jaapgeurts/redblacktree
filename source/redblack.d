@@ -54,8 +54,8 @@ class Node {
         writeln("];");
 
         if (left is null && right is null) {
-            if (parent !is null) 
-                writeln("  ", value, "->\"", parent.value , "\";");
+            // if (parent !is null) 
+            //     writeln("  ", value, "->\"", parent.value , "\";");
             return;
         }
 
@@ -75,8 +75,8 @@ class Node {
             nodeName = to!string(right.value);
         writeln("  ", value, "->\"", nodeName, "\";");
 
-        if (parent !is null) 
-            writeln("  ", value, "->\"", parent.value , "\";");
+        // if (parent !is null) 
+        //     writeln("  ", value, "->\"", parent.value , "\";");
 
         if (left !is null)
             left.printtree(depth + 1, l + 1, r);
@@ -96,86 +96,95 @@ class Node {
     void rotateRight() {
         Node t = left;
         left = t.right;
-        if (left !is null)
+        if (left !is null) {
             left.parent = this;
+            left.link = &left;
+        }
         t.right = this;
         t.parent = parent;
+        *link = t;
         t.link = link;
         link = &t.right;
-        *t.link = t;
         parent = t;
     }
 
     void rotateLeft() {
         Node t = right;
         right = t.left;
-        if (right !is null)
+        if (right !is null) {
             right.parent = this;
+            right.link = &right;
+        }
         t.left = this;
         t.parent = parent;
+        *link = t;
         t.link = link;
         link = &t.left;
-        *t.link = t;
         parent = t;
     }
 
-    void reorderTreeRight() {
-        Node uncle = parent.right == this ? parent.left : parent.right;
-        if (uncle !is null && uncle.color == Color.Red) {
-            // recolor
-            parent.color = Color.Red;
-            color = Color.Black;
-            uncle.color = Color.Black;
-        }
-        else {
-            // rotate  (two cases)
-            if (parent.right == this) {
-                // RR case rotation
-                parent.rotateLeft();
-                //swap colors
-                Color t = color;
-                color = left.color;
-                left.color = t;
+    void reorderTree(Node newNode) {
+        if (parent is null)
+            return; // we're at the root;
+
+        if (color == Color.Black)
+            return; // nothing to do
+
+        if (parent.right == this) {
+            // left case
+            Node uncle = parent.left;
+            if (uncle !is null && uncle.color == Color.Red) {
+                // recolor
+                parent.color = Color.Red;
+                color = Color.Black;
+                uncle.color = Color.Black;
+                if (parent.parent !is null)
+                    parent.parent.reorderTree(parent);
             }
             else {
-                // LR case rotation
-                rotateLeft();
-                parent.parent.rotateRight();
-
+                // rotate  (two cases)
+                if (right == newNode) {
+                    // RR case rotation
+                    parent.rotateLeft();
+                    //swap colors
+                    Color t = color;
+                    color = left.color;
+                    left.color = t;
+                }
+                else {
+                    // RL case rotation
+                    rotateRight();
+                    parent.reorderTree(this);
+                }
             }
-            if (parent !is null && parent.parent !is null)
-                parent.reorderTreeRight();
-        }
-
-    }
-
-    void reorderTreeLeft() {
-        Node uncle = parent.left == this ? parent.right : parent.left;
-        if (uncle !is null && uncle.color == Color.Red) {
-            // recolor
-            parent.color = Color.Red;
-            color = Color.Black;
-            uncle.color = Color.Black;
         }
         else {
-            // rotate  (two cases)
-            if (parent.left == this) {
-                // LL case rotation
-                parent.rotateRight();
-                //swap colors
-                Color t = color;
-                color = right.color;
-                right.color = t;
-
+            // uncle is on the right
+            Node uncle = parent.right;
+            if (uncle !is null && uncle.color == Color.Red) {
+                // recolor
+                parent.color = Color.Red;
+                color = Color.Black;
+                uncle.color = Color.Black;
+                if (parent.parent !is null)
+                    parent.parent.reorderTree(parent);
             }
             else {
-                // RL case rotation
-                rotateRight();
-                parent.parent.rotateLeft();
-
+                // rotate  (two cases)
+                if (left == newNode) {
+                    // LL case rotation
+                    parent.rotateRight();
+                    //swap colors
+                    Color t = color;
+                    color = right.color;
+                    right.color = t;
+                }
+                else {
+                    // LR case rotation
+                    rotateLeft();
+                    parent.reorderTree(this);
+                }
             }
-            if (parent !is null && parent.parent !is null)
-                parent.reorderTreeLeft();
         }
     }
 
@@ -186,7 +195,7 @@ class Node {
             if (left is null) {
                 left = new Node(this, &left, val);
                 if (color == Color.Red) {
-                    this.reorderTreeLeft();
+                    reorderTree(left);
                 }
             }
             else {
@@ -198,7 +207,7 @@ class Node {
             if (right is null) {
                 right = new Node(this, &right, val);
                 if (color == Color.Red) {
-                    this.reorderTreeRight();
+                    reorderTree(right);
                 }
             }
             else {
@@ -238,15 +247,14 @@ graph [fontname = "helvetica"];
 node [fontname = "helvetica"];
 edge [fontname = "helvetica"];
 splines=false
-nodesep=0.4; //was 0.8
-ranksep=0.5;
-penwidth=0.1;
+//nodesep=0.4; //was 0.8
+//ranksep=0.5;
+//penwidth=0.1;
 node[shape=circle];
 labelloc=top;
 labeljust=left;
-EOS"
-        );
-        writeln("label=\"",caption,"\"");
+EOS");
+        writeln("label=\"", caption, "\"");
 
         if (root !is null) {
             root.printtree(0, 0, 0);

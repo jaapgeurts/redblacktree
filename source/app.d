@@ -25,13 +25,12 @@ void main(string[] args)
 
 	RBTree tree = new RBTree();
 
-	int[] arr = 100.iota.randomCover.take(40).array;
-	/*int[] arr;
+	int[] arr;
 	if (args.length == 1)
-		arr = [9,5,15,2,7,10,17,6,8,16];
+		arr =  1000.iota.randomCover.take(60).array;
 	else {
         arr = args[1].split(",").map!(to!int).array;
-	}*/
+	}
 	
     foreach(val; arr) {
 		tree.insert(val);
