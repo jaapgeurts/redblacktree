@@ -16,17 +16,24 @@ enum Color {
     Red
 }
 
+// Callback for traversal. Depth is the current depth, left and right indicate how many left and right turns have been taken.
+// value is value of the node
 alias NodeFunc = void function(int depth, int left, int right, int val);
 
 /// The node is the node in the tree 
+/// The nodes keep a left, right and parent reference.
 class Node {
     /// The left side;
     Node left;
     /// The right side
     Node right;
+    
     // The parent
     Node parent;
-    // link to ref
+    
+    // Pointer to the parent reference(either left or right or root) to itself.
+    // This is used when rotating so the incoming link from the parent to the current node can change 
+    // to the new node after rotation. (This is required so we can change the root reference in case of a root rotation)
     Node* link;
     /// The color of the node
     Color color;
