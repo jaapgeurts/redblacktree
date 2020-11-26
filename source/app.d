@@ -1,3 +1,8 @@
+/*
+ * demo program for the redblack tree
+ * 2020-11-16 Jaap Geurts <jaap.geurts@fontys.nl>
+ */
+
 import std.stdio;
 import std.range;
 import std.random;

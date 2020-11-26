@@ -1,5 +1,11 @@
 module redblack;
 
+/*
+ * Redblack tree implementation
+ * 2020-11-26 Jaap Geurts <jaap.geurts@fontys.nl>
+ */
+
+
 import std.stdio;
 import std.conv;
 import std.random : uniform;
@@ -27,6 +33,8 @@ class Node {
     /// The value of this node
     int value;
 
+    bool printparents = false;
+
     /// Default constructor
     this(Node par, Node* lnk, int val, Color col = Color.Red) {
         value = val;
@@ -35,27 +43,18 @@ class Node {
         link = lnk;
     }
 
-    void leaves(const int max_depth, int depth, int l, int r, NodeFunc f) {
-        if (depth < max_depth) {
-            if (left !is null)
-                left.leaves(max_depth, depth + 1, l + 1, r, f);
-            if (right !is null)
-                right.leaves(max_depth, depth + 1, l, r + 1, f);
-        }
-        else if (depth > max_depth)
-            return;
-        else if (depth == max_depth)
-            f(depth, l, r, value);
-    }
-
+    // Prints out the tree nodes in graphviz format
     void printtree(int depth, int l, int r) {
         write("  ", value, " [style=filled fillcolor = ");
         write(color == Color.Red ? "lightcoral" : "gray");
         writeln("];");
 
         if (left is null && right is null) {
-            // if (parent !is null) 
-            //     writeln("  ", value, "->\"", parent.value , "\";");
+             // printing parents confuses the tree.gv script
+            if (printparents) {
+                if (parent !is null) 
+                    writeln("  ", value, "->\"", parent.value , "\";");
+                }
             return;
         }
 
@@ -75,8 +74,11 @@ class Node {
             nodeName = to!string(right.value);
         writeln("  ", value, "->\"", nodeName, "\";");
 
-        // if (parent !is null) 
-        //     writeln("  ", value, "->\"", parent.value , "\";");
+        // printing parents confuses the tree.gv script
+        if (printparents) {
+            if (parent !is null) 
+                writeln("  ", value, "->\"", parent.value , "\";");
+        }
 
         if (left !is null)
             left.printtree(depth + 1, l + 1, r);
@@ -84,6 +86,7 @@ class Node {
             right.printtree(depth + 1, l, r + 1);
     }
 
+    // traverses the tree in-order
     void inorder(int depth, int l, int r, NodeFunc f) {
         if (left !is null)
             left.inorder(depth + 1, l + 1, r, f);
@@ -93,6 +96,7 @@ class Node {
         }
     }
 
+    // rotates the node to the right
     void rotateRight() {
         Node t = left;
         left = t.right;
@@ -108,6 +112,7 @@ class Node {
         parent = t;
     }
 
+    // rotates the node to the left
     void rotateLeft() {
         Node t = right;
         right = t.left;
@@ -123,6 +128,7 @@ class Node {
         parent = t;
     }
 
+    // move up the tree to restore color and balance
     void reorderTree(Node newNode) {
         if (parent is null)
             return; // we're at the root;
